@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Checklist Klaim BPJS Ambulans — RSUD Cideres</title>
+    <style>
+        :root {
+            --bg: #f6f9fc;
+            --card: #ffffff;
+            --primary: #0b6efd;
+            --accent: #0d9488;
+            --muted: #6b7280;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --glass: rgba(11, 110, 253, 0.06);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 100%);
+            color: #0f172a
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 36px auto;
+            padding: 20px
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 6px 20px rgba(2, 6, 23, 0.06)
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 20px
+        }
+
+        p.lead {
+            margin: 0 0 16px;
+            color: var(--muted)
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px
+        }
+
+        .columns-2 {
+            grid-template-columns: 1fr 340px
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #0f172a;
+            margin-bottom: 6px
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e6eef6;
+            background: #fbfdff
+        }
+
+        textarea {
+            min-height: 84px;
+            resize: vertical
+        }
+
+        .fieldset {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px dashed #eef2ff;
+            background: linear-gradient(180deg, rgba(13, 148, 136, 0.02), transparent)
+        }
+
+        .checks {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px
+        }
+
+        .check {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            background: #fcfeff;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #f0f6fb
+        }
+
+        .check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px
+        }
+
+        .file-input {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 14px;
+            border-radius: 9px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer
+        }
+
+        .btn.secondary {
+            background: #f3f4f6;
+            color: #0f172a;
+            border: 1px solid #e6eef6
+        }
+
+        .btn.danger {
+            background: var(--danger)
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .summary {
+            background: var(--glass);
+            padding: 12px;
+            border-radius: 10px
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .note {
+            font-size: 13px;
+            color: #334155
+        }
+
+        .invalid {
+            color: var(--danger);
+            font-weight: 600
+        }
+
+        @media (max-width:900px) {
+            .columns-2 {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>Checklist Kelengkapan Dokumen — Klaim BPJS Ambulans</h1>
+            <p class="lead">Form ini digunakan untuk verifikasi kelengkapan dokumen pengajuan klaim ambulans. Data akan
+                tersimpan di browser (localStorage) dan dapat diekspor.</p>
+
+            <form id="claimForm" class="grid columns-2" autocomplete="off">
+                <div>
+                    <div class="grid">
+                        <div>
+                            <label>Nama Pasien</label>
+                            <input id="nama" type="text" placeholder="Nama pasien..." required />
+                        </div>
+                        <div>
+                            <label>Nomor RM / SEP</label>
+                            <input id="rm" type="text" placeholder="00012345 / SEP..." />
+                        </div>
+                        <div>
+                            <label>Tanggal Pelayanan</label>
+                            <input id="tanggal" type="date" required />
+                        </div>
+                        <div>
+                            <label>Unit Pengirim</label>
+                            <select id="unit">
+                                <option>IGD</option>
+                                <option>Rawat Inap</option>
+                                <option>Rawat Jalan</option>
+                                <option>Poliklinik</option>
+                                <option>Unit Ambulans</option>
+                            </select>
+                        </div>
+
+                        <div class="fieldset">
+                            <label style="margin-bottom:8px">Jenis Kasus</label>
+                            <div class="row" style="gap:12px">
+                                <label><input type="radio" name="kasus" value="Rujukan" checked /> Rujukan</label>
+                                <label><input type="radio" name="kasus" value="KLL" /> KLL (Kecelakaan Lalu
+                                    Lintas)</label>
+                                <label><input type="radio" name="kasus" value="Gawat Darurat" /> Gawat Darurat</label>
+                            </div>
+                            <p class="small" style="margin-top:8px">*Jika memilih KLL, upload Surat Laporan Polisi
+                                wajib.</p>
+                        </div>
+
+                        <div class="fieldset">
+                            <label style="margin-bottom:8px">Checklist Dokumen</label>
+                            <div class="checks" id="checks">
+                                <div class="check"><input type="checkbox" id="c_suratjalan"
+                                        data-name="Surat Jalan Ambulans"><label for="c_suratjalan">Surat Jalan
+                                        Ambulans</label></div>
+                                <div class="check"><input type="checkbox" id="c_suratrujukan"
+                                        data-name="Surat Rujukan"><label for="c_suratrujukan">Surat Rujukan</label>
+                                </div>
+                                <div class="check"><input type="checkbox" id="c_kwitansi"
+                                        data-name="Kwitansi / Bukti Biaya"><label for="c_kwitansi">Kwitansi / Bukti
+                                        Biaya</label></div>
+                                <div class="check"><input type="checkbox" id="c_resume"
+                                        data-name="Resume Medis / Catatan Perjalanan"><label for="c_resume">Resume Medis
+                                        / Catatan Perjalanan</label></div>
+                                <div class="check"><input type="checkbox" id="c_ktp" data-name="Fotokopi KTP"><label
+                                        for="c_ktp">Fotokopi KTP</label></div>
+                                <div class="check"><input type="checkbox" id="c_bpjs"
+                                        data-name="Fotokopi Kartu BPJS / SEP"><label for="c_bpjs">Fotokopi Kartu BPJS /
+                                        SEP</label></div>
+                                <div class="check"><input type="checkbox" id="c_lp"
+                                        data-name="Surat Laporan Polisi (KLL)"><label for="c_lp">Surat Laporan Polisi
+                                        (KLL)</label></div>
+                                <div class="check"><input type="checkbox" id="c_lain"
+                                        data-name="Dokumen Pendukung Lainnya"><label for="c_lain">Dokumen Pendukung
+                                        Lainnya</label></div>
+                            </div>
+                        </div>
+
+                        <div class="fieldset">
+                            <label>Upload Dokumen (opsional, PDF/JPG)</label>
+                            <div style="display:grid;gap:8px">
+                                <div><label class="file-input">Surat Jalan: <input id="f_suratjalan" type="file"
+                                            accept=".pdf,image/*"></label></div>
+                                <div><label class="file-input">Surat Rujukan: <input id="f_suratrujukan" type="file"
+                                            accept=".pdf,image/*"></label></div>
+                                <div><label class="file-input">Kwitansi: <input id="f_kwitansi" type="file"
+                                            accept=".pdf,image/*"></label></div>
+                                <div><label class="file-input">Laporan Polisi (KLL): <input id="f_lp" type="file"
+                                            accept=".pdf,image/*"></label></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label>Catatan / Keterangan</label>
+                            <textarea id="keterangan" placeholder="Catatan tambahan..."></textarea>
+                        </div>
+
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <button class="btn" type="submit">Simpan Checklist</button>
+                            <button id="clearBtn" type="button" class="btn secondary">Bersihkan Form</button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right column: Summary & Actions -->
+                <aside>
+                    <div class="summary">
+                        <p class="small">Ringkasan & Kontrol</p>
+                        <div style="margin-top:8px">
+                            <div style="display:flex;justify-content:space-between"><span class="muted">Status
+                                    Kelengkapan</span><strong id="statusAll">Belum Diverifikasi</strong></div>
+                            <div style="height:10px"></div>
+                            <div class="muted"><strong>Preview Data:</strong></div>
+                            <div id="preview" style="margin-top:8px;font-size:14px;color:#0f172a"></div>
+                        </div>
+
+                        <hr style="margin:12px 0;border:none;border-top:1px solid #eef2ff" />
+
+                        <div class="controls">
+                            <button id="exportCsv" type="button" class="btn secondary">Export CSV</button>
+                            <button id="exportJson" type="button" class="btn secondary">Export JSON</button>
+                            <button id="openList" type="button" class="btn" style="background:var(--accent)">Lihat
+                                Rekap</button>
+                        </div>
+
+                        <p class="note" style="margin-top:12px">Data disimpan di browser (localStorage). Untuk berbagi,
+                            ekspor CSV/JSON lalu upload ke Drive/Email.</p>
+                        <p class="small" style="margin-top:8px">Versi: 1.0 • Template: RSUD Cideres</p>
+                    </div>
+
+                    <div style="height:12px"></div>
+
+                    <div class="card" style="padding:12px">
+                        <div class="muted"><strong>Panduan singkat</strong></div>
+                        <ol style="margin:8px 0 0 16px;color:#0f172a">
+                            <li>Isi data pasien dan tanggal.</li>
+                            <li>Tandai semua dokumen yang tersedia.</li>
+                            <li>Jika pilih KLL, pastikan <em>Surat Laporan Polisi</em> diupload atau dicentang.</li>
+                            <li>Klik <strong>Simpan Checklist</strong> untuk menyimpan rekap.</li>
+                        </ol>
+                    </div>
+                </aside>
+            </form>
+        </div>
+
+        <!-- Modal / Rekap list -->
+        <div id="listModal" class="card" style="margin-top:16px;display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h2 style="font-size:16px;margin:0">Rekap Checklist Tersimpan</h2>
+                <div style="display:flex;gap:8px">
+                    <button id="downloadAll" class="btn secondary">Export Semua CSV</button>
+                    <button id="closeList" class="btn">Tutup</button>
+                </div>
+            </div>
+            <div style="margin-top:12px" id="listArea"></div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById('claimForm');
+            const preview = document.getElementById('preview');
+            const statusAll = document.getElementById('statusAll');
+            const listModal = document.getElementById('listModal');
+            const listArea = document.getElementById('listArea');
+
+            function q(id) { return document.getElementById(id) }
+            function radioVal(name) { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : null }
+
+            function buildPreview() {
+                const nama = q('nama').value.trim();
+                const rm = q('rm').value.trim();
+                const tanggal = q('tanggal').value;
+                const unit = q('unit').value;
+                const jenis = radioVal('kasus');
+                const checks = Array.from(document.querySelectorAll('#checks input[type=checkbox]')).map(c => {
+                    return { name: c.dataset.name, checked: c.checked }
+                });
+                let html = '<div><strong>' + (nama || '-') + '</strong> <div class="small">' + (rm ? ('RM/SEP: ' + rm) : '') + '</div>';
+                html += '<div class="small">Tanggal: ' + (tanggal || '-') + '</div>';
+                html += '<div class="small">Unit: ' + unit + ' • Kasus: ' + jenis + '</div>';
+                html += '<div style="margin-top:8px"><strong>Dokumen:</strong><ul style="margin:6px 0 0 18px">';
+                checks.forEach(c => html += '<li style="margin-bottom:4px">' + (c.checked ? '✅ ' : '❌ ') + c.name + '</li>');
+                html += '</ul></div></div>';
+                preview.innerHTML = html;
+                // overall status
+                const allRequired = checks.filter(c => c.name === 'Surat Laporan Polisi (KLL)')[0];
+                let isComplete = checks.filter(c => c.checked).length >= 4; // basic threshold
+                if (jenis === 'KLL' && (!allRequired || !allRequired.checked)) isComplete = false;
+                statusAll.innerText = isComplete ? 'Lengkap' : 'Belum Lengkap';
+                statusAll.style.color = isComplete ? 'var(--success)' : 'var(--danger)';
+            }
+
+            // load previous values if any
+            function loadForm(data) {
+                if (!data) return;
+                q('nama').value = data.nama || '';
+                q('rm').value = data.rm || '';
+                q('tanggal').value = data.tanggal || '';
+                q('unit').value = data.unit || 'IGD';
+                if (data.kasus) {
+                    const r = document.querySelector('input[name="kasus"][value="' + data.kasus + '"]');
+                    if (r) r.checked = true;
+                }
+                // checks
+                const map = data.checks || {};
+                document.querySelectorAll('#checks input[type=checkbox]').forEach(ch => {
+                    ch.checked = !!map[ch.dataset.name];
+                });
+                q('keterangan').value = data.keterangan || '';
+                buildPreview();
+            }
+
+            // Save entry to localStorage
+            function saveEntry(entry) {
+                const key = 'klaim_ambulans_rekap';
+                const arr = JSON.parse(localStorage.getItem(key) || '[]');
+                arr.unshift(entry); // newest first
+                localStorage.setItem(key, JSON.stringify(arr));
+            }
+
+            // Export one entry to CSV / JSON
+            function entryToCsv(entry) {
+                const header = ['Nama Pasien', 'RM/SEP', 'Tanggal', 'Unit', 'Kasus', 'Dokumen (✓)', 'Keterangan', 'Timestamp'];
+                const docs = Object.keys(entry.checks).map(k => (entry.checks[k] ? k + ':✓' : k + ':✗')).join(' | ');
+                const row = [entry.nama, entry.rm, entry.tanggal, entry.unit, entry.kasus, '"' + docs + '"', '"' + (entry.keterangan || '') + '"', entry.ts];
+                return header.join(',') + '\n' + row.join(',');
+            }
+
+            form.addEventListener('input', buildPreview);
+            buildPreview();
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                // validation
+                const nama = q('nama').value.trim();
+                const tanggal = q('tanggal').value;
+                if (!nama || !tanggal) {
+                    alert('Mohon lengkapi Nama Pasien dan Tanggal Pelayanan.');
+                    return;
+                }
+                const jenis = radioVal('kasus');
+                const checks = {};
+                document.querySelectorAll('#checks input[type=checkbox]').forEach(ch => {
+                    checks[ch.dataset.name] = ch.checked;
+                });
+                // jika KLL -> Pastikan Surat Laporan Polisi dicentang OR file uploaded
+                if (jenis === 'KLL' && !checks['Surat Laporan Polisi (KLL)']) {
+                    const f = q('f_lp').files;
+                    if (!f || f.length === 0) {
+                        if (!confirm('Kasus KLL: Surat Laporan Polisi belum dicentang atau diupload. Lanjut simpan? (Biasanya klaim tidak dapat diproses tanpa LP)')) return;
+                    }
+                }
+
+                // prepare entry
+                const entry = {
+                    nama: nama,
+                    rm: q('rm').value.trim(),
+                    tanggal: tanggal,
+                    unit: q('unit').value,
+                    kasus: jenis,
+                    checks: checks,
+                    keterangan: q('keterangan').value.trim(),
+                    ts: new Date().toISOString()
+                };
+                saveEntry(entry);
+                alert('Checklist tersimpan ke rekap lokal.');
+                // clear minimal fields for next
+                q('nama').value = ''; q('rm').value = ''; q('tanggal').value = ''; q('keterangan').value = '';
+                document.querySelectorAll('#checks input[type=checkbox]').forEach(ch => ch.checked = false);
+                buildPreview();
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function () {
+                if (!confirm('Bersihkan form?')) return;
+                q('nama').value = ''; q('rm').value = ''; q('tanggal').value = ''; q('keterangan').value = '';
+                document.querySelectorAll('#checks input[type=checkbox]').forEach(ch => ch.checked = false);
+                ['f_suratjalan', 'f_suratrujukan', 'f_kwitansi', 'f_lp'].forEach(id => q(id).value = '');
+                buildPreview();
+            });
+
+            // Export controls
+            document.getElementById('exportJson').addEventListener('click', function () {
+                const key = 'klaim_ambulans_rekap';
+                const arr = JSON.parse(localStorage.getItem(key) || '[]');
+                const blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'rekap_klaim_ambulans.json'; a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('exportCsv').addEventListener('click', function () {
+                const key = 'klaim_ambulans_rekap';
+                const arr = JSON.parse(localStorage.getItem(key) || '[]');
+                if (!arr.length) { alert('Belum ada data rekap.'); return; }
+                // create CSV aggregated
+                const header = ['Nama Pasien', 'RM/SEP', 'Tanggal', 'Unit', 'Kasus', 'Dokumen', 'Keterangan', 'Timestamp'];
+                const lines = arr.map(entry => {
+                    const docs = Object.keys(entry.checks).map(k => (entry.checks[k] ? k + ':✓' : k + ':✗')).join(' | ');
+                    const row = [entry.nama, entry.rm, entry.tanggal, entry.unit, entry.kasus, docs, entry.keterangan.replace(/"/g, '""'), entry.ts];
+                    return row.map(v => `"${v}"`).join(',');
+                });
+                const csv = header.join(',') + '\n' + lines.join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'rekap_klaim_ambulans.csv'; a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // List modal
+            document.getElementById('openList').addEventListener('click', function () {
+                const key = 'klaim_ambulans_rekap';
+                const arr = JSON.parse(localStorage.getItem(key) || '[]');
+                listArea.innerHTML = '';
+                if (!arr.length) { listArea.innerHTML = '<p class="muted">Belum ada data tersimpan.</p>'; listModal.style.display = 'block'; return; }
+                const table = document.createElement('table');
+                table.style.width = '100%'; table.style.borderCollapse = 'collapse';
+                const thead = document.createElement('thead');
+                thead.innerHTML = '<tr style="background:#f8fafc"><th style="text-align:left;padding:8px">Nama</th><th style="padding:8px">Tanggal</th><th style="padding:8px">Kasus</th><th style="padding:8px">Dokumen</th><th style="padding:8px">Aksi</th></tr>';
+                table.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                arr.forEach((r, idx) => {
+                    const tr = document.createElement('tr'); tr.style.borderTop = '1px solid #f1f5f9';
+                    const docs = Object.keys(r.checks).map(k => r.checks[k] ? '✓' : '✗').join(' ');
+                    tr.innerHTML = '<td style="padding:8px">' + (r.nama || '-') + '</td><td style="padding:8px">' + r.tanggal + '</td><td style="padding:8px">' + r.kasus + '</td><td style="padding:8px;font-size:13px">' + docs + '</td><td style="padding:8px"><button data-idx="' + idx + '" class="btn secondary btn-view">Lihat</button> <button data-idx="' + idx + '" class="btn danger btn-delete">Hapus</button></td>';
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                listArea.appendChild(table);
+                listModal.style.display = 'block';
+                // attach listeners
+                listArea.querySelectorAll('.btn-view').forEach(b => {
+                    b.addEventListener('click', function () {
+                        const idx = parseInt(this.dataset.idx, 10);
+                        const entry = JSON.parse(localStorage.getItem('klaim_ambulans_rekap') || '[]')[idx];
+                        alert('Detail:\\nNama: ' + entry.nama + '\\nTanggal: ' + entry.tanggal + '\\nKasus: ' + entry.kasus + '\\nKeterangan: ' + (entry.keterangan || '-'));
+                    });
+                });
+                listArea.querySelectorAll('.btn-delete').forEach(b => {
+                    b.addEventListener('click', function () {
+                        if (!confirm('Hapus data ini dari rekap?')) return;
+                        const idx = parseInt(this.dataset.idx, 10);
+                        let arr = JSON.parse(localStorage.getItem('klaim_ambulans_rekap') || '[]');
+                        arr.splice(idx, 1);
+                        localStorage.setItem('klaim_ambulans_rekap', JSON.stringify(arr));
+                        // refresh
+                        document.getElementById('openList').click();
+                    });
+                });
+            });
+
+            document.getElementById('closeList').addEventListener('click', function () {
+                listModal.style.display = 'none';
+            });
+
+            document.getElementById('downloadAll').addEventListener('click', function () {
+                document.getElementById('exportCsv').click();
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
